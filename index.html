@@ -1,114 +1,174 @@
-<!DOCTYPE html>  <html lang="pt-BR">  
-<head>  
-<meta charset="UTF-8">  
-<meta name="viewport" content="width=device-width,initial-scale=1">  
-<title>Simulador de Manobra</title>  
-<link rel="stylesheet" href="style.css">  
-</head>  
-<body>  
-<header>  
- <div class="title"><h1>Simulador de Manobra</h1><span>Governo, profundidade e razão de guinada</span></div>  
- <div class="headerActions"><div class="shipSelect"><button class="shipBtn active" data-mode="tanker">NAVIO-TANQUE</button><button class="shipBtn" data-mode="frigate">FRAGATA</button><button class="shipBtn compareBtn" data-mode="compare">COMPARAR</button></div><button id="settingsOpen" class="settingsOpen" type="button" aria-haspopup="dialog" aria-controls="settingsOverlay"><span aria-hidden="true">⚙</span> CONFIGURAÇÕES</button></div>  
-</header>  
-<main>  
- <section class="simulation">  
-  <canvas id="sea"></canvas>  
-  <div class="headingBox">  
-   <div id="singleHeading"><span>RUMO</span><strong id="heading">000°</strong><div class="speedReadout"><span>VELOCIDADE</span><b id="speedText">0.0 kn</b></div><div class="manualSpeedControl"><span>AJUSTAR AGORA</span><div><input id="manualSpeedInput" type="number" min="-40" max="60" step="0.1" inputmode="decimal" placeholder="kn" aria-label="Definir velocidade atual em nós"><button id="applyManualSpeed" type="button">OK</button></div></div></div>  
-   <div id="compareHeadings"><div><span class="tankerColor">TANQUE</span><strong id="tankerHeading">000°</strong><small id="tankerSpeed">0.0 kn</small></div><div><span class="frigateColor">FRAGATA</span><strong id="frigateHeading">000°</strong><small id="frigateSpeed">0.0 kn</small></div></div>  
-  </div>  
-  <div class="shipName" id="shipName">NAVIO-TANQUE</div>  
-  <div class="waterSelector"><span>PROFUNDIDADE</span><div><button class="waterBtn active" data-water="deep">DEEP WATERS</button><button class="waterBtn" data-water="shallow">SHALLOW WATERS</button></div></div>  
-  <div class="speedSelector"><span>ACELERAÇÃO DO TEMPO</span><div><button class="speedBtn active" data-speed="1">1×</button><button class="speedBtn" data-speed="2">2×</button><button class="speedBtn" data-speed="3">3×</button><button class="speedBtn" data-speed="4">4×</button></div></div>  
-  <div class="lessonGuide">  
-   <div class="tankerLesson"><strong>TANQUE</strong><span>Estável · resposta lenta · curva ampla</span></div>  
-   <div class="frigateLesson"><strong>FRAGATA</strong><span>Ágil · curva fechada · exige correções</span></div>  
-  </div>  
-  <div class="depthStatus" id="depthStatus"><strong>ÁGUAS PROFUNDAS</strong><span>Resposta normal de manobra</span></div>  
-  <div class="cameraControls">  
-   <button id="zoomOut" aria-label="Diminuir zoom">−</button><label>ZOOM <input id="zoom" type="range" min="18" max="120" value="100"></label><button id="zoomIn" aria-label="Aumentar zoom">+</button>  
-   <button id="overview">VER TRAJETÓRIA</button><button id="resetTrail">LIMPAR ROTA</button>  
-  </div>  
-  <div class="scaleText" id="scaleText">100%</div>  
- </section>  
- <section class="controls">  
-  <div class="panel rudderPanel"><h2>ÂNGULO DO LEME</h2><div class="rudderGauge"><div class="numbers"><span>35</span><span>20</span><span>10</span><span>0</span><span>10</span><span>20</span><span>35</span></div><div class="rudderTrack"><div class="portSide"></div><div class="starboardSide"></div><div class="rudderCenter"></div><div id="rudderOrderPointer" class="rudderOrderPointer" aria-hidden="true"></div><div id="rudderPointer" class="rudderPointer" aria-hidden="true"></div><div id="frigateRudderPointer" class="rudderPointer secondRudderPointer" aria-hidden="true"></div></div><div class="rudderLabels"><span class="port">BB</span><span class="mid">A MEIO</span><span class="starboard">BE</span></div></div><div class="rudderReadouts"><div class="actualReadout"><span>ATUAL</span><strong id="rudderText" class="digital">0°</strong><div id="compareRudder"><span class="tankerColor">T <strong id="tankerRudderText">0°</strong></span><span class="frigateColor">F <strong id="frigateRudderText">0°</strong></span></div></div><div class="orderReadout"><span>SOLICITADO</span><strong id="rudderOrderText" class="digital orderDigital">0°</strong></div></div></div>  
-  <div class="panel wheelPanel"><h2>TIMÃO</h2><div class="wheelContainer"><div id="wheel" class="wheel"><div class="wheelRing"></div><div class="spoke s1"></div><div class="spoke s2"></div><div class="spoke s3"></div><div class="spoke s4"></div><div class="spoke s5"></div><div class="spoke s6"></div><div class="spoke s7"></div><div class="spoke s8"></div><div class="hub"></div></div></div><div class="wheelBottom"><span class="port">BB</span><button id="midships">A MEIO</button><span class="starboard">BE</span></div></div>  
-  <div class="panel enginePanel"><h2>MANETE DE MÁQUINA</h2><div id="engineTelegraph" class="engineTelegraph"><div id="engineRail" class="engineRail"><div class="aheadZone"></div><div class="asternZone"></div><div class="engineCenter"></div><div id="engineHandle" class="engineHandle stop" role="slider" tabindex="0" aria-label="Ordem de máquina" aria-valuemin="-4" aria-valuemax="4" aria-valuenow="0" aria-valuetext="Sem máquina"></div></div><div class="engineMarks"><button class="engineStep ahead" data-engine="4">FULL AHEAD</button><button class="engineStep ahead" data-engine="3">HALF AHEAD</button><button class="engineStep ahead" data-engine="2">SLOW AHEAD</button><button class="engineStep ahead" data-engine="1">DEAD SLOW AHEAD</button><button class="engineStep stop active" data-engine="0">SEM MÁQUINA</button><button class="engineStep astern" data-engine="-1">DEAD SLOW ASTERN</button><button class="engineStep astern" data-engine="-2">SLOW ASTERN</button><button class="engineStep astern" data-engine="-3">HALF ASTERN</button><button class="engineStep astern" data-engine="-4">FULL ASTERN</button></div></div><strong id="engineText" class="engineText stop">SEM MÁQUINA</strong></div>  
-  <div class="panel rotPanel"><h2>RAZÃO DE GUINADA — ROT</h2><div class="rotGauge"><div class="rotArc"></div><span id="rotMaxLeft" class="rot30L">30</span><span id="rotMidLeft" class="rot15L">15</span><span class="rot0">0</span><span id="rotMidRight" class="rot15R">15</span><span id="rotMaxRight" class="rot30R">30</span><div id="rotNeedle" class="rotNeedle"></div><div id="frigateRotNeedle" class="rotNeedle secondNeedle"></div><div class="rotHub"></div></div><div class="rotSides"><span class="port">BB</span><div class="rotReadouts"><strong id="rotText" class="digital">0.0°/min</strong><div id="compareRot"><span class="tankerColor">T <strong id="tankerRotText">0.0°/min</strong></span><span class="frigateColor">F <strong id="frigateRotText">0.0°/min</strong></span></div></div><span class="starboard">BE</span></div></div>  
- </section>  
-</main>  <div id="settingsOverlay" class="settingsOverlay" aria-hidden="true">  
- <aside class="settingsDrawer" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">  
-  <div class="settingsHeader"><div><span>MODELO DIDÁTICO</span><h2 id="settingsTitle">Configurações de manobra</h2></div><button id="settingsClose" type="button" aria-label="Fechar configurações">×</button></div>  
-  <p class="settingsIntro">Edite cada embarcação separadamente. Os valores ficam salvos neste navegador.</p>  
-  <div class="configTabs" role="tablist" aria-label="Tipo de embarcação"><button class="configTab active" type="button" data-config-ship="tanker" role="tab" aria-selected="true">NAVIO-TANQUE</button><button class="configTab" type="button" data-config-ship="frigate" role="tab" aria-selected="false">FRAGATA</button></div>  
-  <section class="steeringConfig">  
-   <div class="steeringTitle"><div><strong>TEMPO DO APARELHO DE GOVERNO</strong><span>Curso completo deste navio: 35° BB → 35° BE</span></div><label class="steeringTimeValue" for="cfgRudderTime"><input id="cfgRudderTime" type="number" min="1" max="60" step="0.1" inputmode="decimal" aria-label="Tempo do leme de full bombordo a full boreste"><b>s</b></label></div>  
-   <input id="cfgRudderTimeRange" type="range" min="1" max="60" step="0.1" value="30.2" aria-label="Tempo do leme de full bombordo a full boreste em segundos">  
-   <div class="rangeLabels"><span>1 s</span><span>TEMPO DO MODELO</span><span>60 s</span></div>  
-   <p id="rudderTimeExample" class="steeringNote"></p>  
-  </section>  
-  <section class="mapConfig">  
-   <div class="mapTitle"><div><strong>VELOCIDADES POR REGIME</strong><span>Metas próprias para cada profundidade</span></div><small>kn</small></div>  
-   <div class="speedTables">  
-    <div class="speedTableGroup"><h3>DEEP WATERS</h3><div class="speedTable">  
-     <div class="tableHeader"><span>REGIME</span><span class="aheadText">VANTE</span><span class="asternText">RÉ</span></div>  
-     <div class="tableRow"><span>DEAD SLOW</span><input class="speedConfigInput aheadInput" data-water="deep" data-direction="ahead" data-regime="1" type="number" min="0" max="60" step="0.1" inputmode="decimal" aria-label="Dead slow a vante em águas profundas"><input class="speedConfigInput asternInput" data-water="deep" data-direction="astern" data-regime="1" type="number" min="0" max="40" step="0.1" inputmode="decimal" aria-label="Dead slow a ré em águas profundas"></div>  
-     <div class="tableRow"><span>SLOW</span><input class="speedConfigInput aheadInput" data-water="deep" data-direction="ahead" data-regime="2" type="number" min="0" max="60" step="0.1" inputmode="decimal" aria-label="Slow a vante em águas profundas"><input class="speedConfigInput asternInput" data-water="deep" data-direction="astern" data-regime="2" type="number" min="0" max="40" step="0.1" inputmode="decimal" aria-label="Slow a ré em águas profundas"></div>  
-     <div class="tableRow"><span>HALF</span><input class="speedConfigInput aheadInput" data-water="deep" data-direction="ahead" data-regime="3" type="number" min="0" max="60" step="0.1" inputmode="decimal" aria-label="Half a vante em águas profundas"><input class="speedConfigInput asternInput" data-water="deep" data-direction="astern" data-regime="3" type="number" min="0" max="40" step="0.1" inputmode="decimal" aria-label="Half a ré em águas profundas"></div>  
-     <div class="tableRow"><span>FULL / MÁX.</span><input class="speedConfigInput aheadInput" data-water="deep" data-direction="ahead" data-regime="4" type="number" min="0" max="60" step="0.1" inputmode="decimal" aria-label="Velocidade máxima a vante em águas profundas"><input class="speedConfigInput asternInput" data-water="deep" data-direction="astern" data-regime="4" type="number" min="0" max="40" step="0.1" inputmode="decimal" aria-label="Velocidade máxima a ré em águas profundas"></div>  
-    </div></div>  
-    <div class="speedTableGroup shallowTable"><h3>SHALLOW WATERS — h/T ≈ 1,2</h3><div class="speedTable">  
-     <div class="tableHeader"><span>REGIME</span><span class="aheadText">VANTE</span><span class="asternText">RÉ</span></div>  
-     <div class="tableRow"><span>DEAD SLOW</span><input class="speedConfigInput aheadInput" data-water="shallow" data-direction="ahead" data-regime="1" type="number" min="0" max="60" step="0.1" inputmode="decimal" aria-label="Dead slow a vante em águas rasas"><input class="speedConfigInput asternInput" data-water="shallow" data-direction="astern" data-regime="1" type="number" min="0" max="40" step="0.1" inputmode="decimal" aria-label="Dead slow a ré em águas rasas"></div>  
-     <div class="tableRow"><span>SLOW</span><input class="speedConfigInput aheadInput" data-water="shallow" data-direction="ahead" data-regime="2" type="number" min="0" max="60" step="0.1" inputmode="decimal" aria-label="Slow a vante em águas rasas"><input class="speedConfigInput asternInput" data-water="shallow" data-direction="astern" data-regime="2" type="number" min="0" max="40" step="0.1" inputmode="decimal" aria-label="Slow a ré em águas rasas"></div>  
-     <div class="tableRow"><span>HALF</span><input class="speedConfigInput aheadInput" data-water="shallow" data-direction="ahead" data-regime="3" type="number" min="0" max="60" step="0.1" inputmode="decimal" aria-label="Half a vante em águas rasas"><input class="speedConfigInput asternInput" data-water="shallow" data-direction="astern" data-regime="3" type="number" min="0" max="40" step="0.1" inputmode="decimal" aria-label="Half a ré em águas rasas"></div>  
-     <div class="tableRow"><span>FULL / MÁX.</span><input class="speedConfigInput aheadInput" data-water="shallow" data-direction="ahead" data-regime="4" type="number" min="0" max="60" step="0.1" inputmode="decimal" aria-label="Velocidade máxima a vante em águas rasas"><input class="speedConfigInput asternInput" data-water="shallow" data-direction="astern" data-regime="4" type="number" min="0" max="40" step="0.1" inputmode="decimal" aria-label="Velocidade máxima a ré em águas rasas"></div>  
-   </div></div>  
-   </div>  
-   <p class="settingsFootnote">FULL / MÁX. é a referência de cada direção e profundidade: ao alterá-la, Dead Slow, Slow e Half são recalculados na mesma proporção. Com leme aplicado, “Perda em curva” ainda pode reduzir a velocidade.</p>  
-  </section>  
-  <section class="mapConfig rotMapConfig">  
-   <div class="mapTitle"><div><strong>MATRIZ BASE DE ROT — DEEP WATER</strong><span>Linhas: leme · colunas: velocidade através da água; a maior célula acompanha a ROT máxima Deep e todos os demais valores mantêm sua proporção</span></div><small>°/min</small></div>  
-   <div id="rotMatrix" class="rotMatrix" aria-label="Matriz de ROT por velocidade e ângulo de leme"></div>  
-  </section>  
-  <section class="mapConfig dynamicsConfig">  
-   <div class="mapTitle"><div><strong>DINÂMICA DO NAVIO</strong><span>Parâmetros do modelo de aceleração e guinada</span></div><small>MODELO</small></div>  
-   <div class="dynamicsGrid">  
-    <label><span>ACELERAÇÃO</span><div><input class="dynamicInput" data-field="accelerationMps2" type="number" min="0.001" max="2" step="0.0001" inputmode="decimal"><b>m/s²</b></div></label>  
-    <label><span>DESACELERAÇÃO EM COAST</span><div><input class="dynamicInput" data-field="coastDecelerationMps2" type="number" min="0.001" max="1" step="0.001" inputmode="decimal"><b>m/s²</b></div></label>  
-    <label><span>TAU DE GUINADA</span><div><input class="dynamicInput" data-field="tauRefSec" type="number" min="0.5" max="600" step="0.1" inputmode="decimal"><b>s</b></div></label>  
-    <label><span>VELOCIDADE DE REFERÊNCIA DO TAU</span><div><input class="dynamicInput" data-field="tauRefSpeedKn" type="number" min="1" max="40" step="0.1" inputmode="decimal"><b>kn</b></div></label>  
-    <label><span>CRESCIMENTO DA ROT</span><div><input class="dynamicInput" data-field="rotGrowth" type="number" min="0.1" max="3" step="0.05" inputmode="decimal"><b>×</b></div></label>  
-    <label><span>V50 DO LEME</span><div><input class="dynamicInput" data-field="rudderV50Kn" type="number" min="0.1" max="10" step="0.1" inputmode="decimal"><b>kn</b></div></label>  
-    <label><span>PERDA EM CURVA</span><div><input class="dynamicInput" data-field="turnSpeedLoss" data-scale="100" type="number" min="0" max="90" step="1" inputmode="decimal"><b>%</b></div></label>  
-    <label><span>EXPOENTE DA PERDA</span><div><input class="dynamicInput" data-field="turnSpeedExponent" type="number" min="0.1" max="2" step="0.05" inputmode="decimal"><b>p</b></div></label>  
-    <label class="deepRotLimit"><span>ROT MÁXIMA — DEEP</span><div><input class="dynamicInput" data-field="maxRotDeep" type="number" min="1" max="240" step="0.1" inputmode="decimal"><b>°/min</b></div></label>  
-    <label class="shallowRotLimit"><span>ROT MÁXIMA — SHALLOW</span><div><input class="dynamicInput" data-field="maxRotShallow" type="number" min="0.1" max="239.9" step="0.1" inputmode="decimal"><b>°/min</b></div></label>  
-    <label><span>ESTABILIDADE RASA</span><div><input class="dynamicInput" data-field="shallowStability" type="number" min="0.5" max="3" step="0.05" inputmode="decimal"><b>×</b></div></label>  
-    <label><span>INSTABILIDADE DE RUMO</span><div><input class="dynamicInput" data-field="wanderAmplitude" type="number" min="0" max="10" step="0.1" inputmode="decimal"><b>°/min</b></div></label>  
-   </div>  
-  </section>  
-  <section class="growthConfig">  
-   <div class="growthTitle"><div><span>RITMO DA PROPULSÃO</span><small>Altera apenas a aceleração e a desaceleração do navio</small></div><output id="cfgGrowthValue" for="cfgGrowth">1.00×</output></div>  
-   <input id="cfgGrowth" type="range" min="0.25" max="3" step="0.05" value="1">  
-   <div class="rangeLabels"><span>MAIS LENTA</span><span>PADRÃO</span><span>MAIS RÁPIDA</span></div>  
-   <p class="growthNote">A resposta da ROT é ajustada separadamente em “Crescimento da ROT”. Os botões de tempo continuam atuando sobre toda a simulação.</p>  
-  </section>  
-  <section class="graphCard" aria-labelledby="speedGraphTitle">  
-   <div class="graphHeader"><div><h3 id="speedGraphTitle">Velocidade × regime de máquina</h3><span>Os pontos vêm da tabela acima</span></div><span>VELOCIDADE</span></div>  
-   <canvas id="speedGraph" width="500" height="220" aria-label="Gráfico de velocidade por regime de máquina"></canvas>  
-   <div class="graphLegend speedLegend"><span class="asternLegend"><i></i>RÉ DEEP</span><span class="asternLegend shallowLegend"><i></i>RÉ SHALLOW</span><span class="aheadLegend"><i></i>VANTE DEEP</span><span class="aheadLegend shallowLegend"><i></i>VANTE SHALLOW</span></div>  
-  </section>  
-  <section class="graphCard" aria-labelledby="rotGraphTitle">  
-   <div class="graphHeader"><div><h3 id="rotGraphTitle">ROT × velocidade × leme</h3><span>Linhas contínuas: deep · linhas tracejadas: shallow</span></div><span>GUINADA</span></div>  
-   <canvas id="rotGraph" width="500" height="220" aria-label="Gráfico de ROT por ângulo de leme"></canvas>  
-   <div id="rotGraphLegend" class="graphLegend matrixLegend"></div>  
-  </section>  
-  <div id="settingsStatus" class="settingsStatus" role="status" aria-live="polite"></div>  
-  <div class="settingsFooter"><button id="resetConfig" class="resetConfig" type="button">RESTAURAR PADRÃO DESTE NAVIO</button><button id="saveConfig" class="saveConfig" type="button">SALVAR E APLICAR</button></div>  
- </aside>  
-</div>  
-<script src="script.js"></script>  
-</body>  
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Simulador de Manobra</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+ <div class="title"><h1>Simulador de Manobra</h1><span>Governo, profundidade e razão de guinada</span></div>
+ <div class="headerActions"><div class="shipSelect"><button class="shipBtn active" data-mode="tanker">NAVIO-TANQUE</button><button class="shipBtn" data-mode="frigate">FRAGATA</button><button class="shipBtn compareBtn" data-mode="compare">COMPARAR</button></div><button id="settingsOpen" class="settingsOpen" type="button" aria-haspopup="dialog" aria-controls="settingsOverlay"><span aria-hidden="true">⚙</span> CONFIGURAÇÕES</button></div>
+</header>
+<main>
+ <section class="simulation">
+  <canvas id="sea"></canvas>
+  <div class="headingBox">
+   <div id="singleHeading"><span>RUMO</span><strong id="heading">000°</strong><div class="speedReadout"><span>VELOCIDADE</span><b id="speedText">0.0 kn</b></div></div>
+   <div id="compareHeadings"><div><span class="tankerColor">TANQUE</span><strong id="tankerHeading">000°</strong><small id="tankerSpeed">0.0 kn</small></div><div><span class="frigateColor">FRAGATA</span><strong id="frigateHeading">000°</strong><small id="frigateSpeed">0.0 kn</small></div></div>
+  </div>
+  <div class="shipName" id="shipName">NAVIO-TANQUE</div>
+  <div class="waterSelector"><span>PROFUNDIDADE</span><div><button class="waterBtn active" data-water="deep">DEEP WATERS</button><button class="waterBtn" data-water="shallow">SHALLOW WATERS</button></div></div>
+  <div class="speedSelector"><span>ACELERAÇÃO DO TEMPO</span><div><button class="speedBtn active" data-speed="1">1×</button><button class="speedBtn" data-speed="2">2×</button><button class="speedBtn" data-speed="3">3×</button><button class="speedBtn" data-speed="4">4×</button></div></div>
+  <div class="lessonGuide">
+   <div class="tankerLesson"><strong>TANQUE</strong><span>Estável · resposta lenta · curva ampla</span></div>
+   <div class="frigateLesson"><strong>FRAGATA</strong><span>Ágil · curva fechada · exige correções</span></div>
+  </div>
+  <div class="depthStatus" id="depthStatus"><strong>ÁGUAS PROFUNDAS</strong><span>Resposta normal de manobra</span></div>
+  <div class="cameraControls">
+   <button id="zoomOut" aria-label="Diminuir zoom">−</button><label>ZOOM <input id="zoom" type="range" min="18" max="120" value="100"></label><button id="zoomIn" aria-label="Aumentar zoom">+</button>
+   <button id="overview">VER TRAJETÓRIA</button><button id="resetTrail">LIMPAR ROTA</button>
+  </div>
+  <div class="scaleText" id="scaleText">100%</div>
+ </section>
+
+ <section class="controls">
+  <div class="panel rudderPanel">
+   <h2>ÂNGULO DO LEME</h2>
+   <div class="rudderGauge">
+    <div class="numbers"><span>35</span><span>20</span><span>10</span><span>0</span><span>10</span><span>20</span><span>35</span></div>
+    <div class="rudderTrack"><div class="portSide"></div><div class="starboardSide"></div><div class="rudderCenter"></div><div id="rudderOrderPointer" class="rudderOrderPointer" aria-hidden="true"></div><div id="rudderPointer" class="rudderPointer" aria-hidden="true"></div><div id="frigateRudderPointer" class="rudderPointer secondRudderPointer" aria-hidden="true"></div></div>
+    <div class="rudderLabels"><span class="port">BB</span><span class="mid">A MEIO</span><span class="starboard">BE</span></div>
+   </div>
+   <div class="rudderReadouts"><div class="actualReadout"><span>ATUAL</span><strong id="rudderText" class="digital">0°</strong><div id="compareRudder"><span class="tankerColor">T <strong id="tankerRudderText">0°</strong></span><span class="frigateColor">F <strong id="frigateRudderText">0°</strong></span></div></div><div class="orderReadout"><span>SOLICITADO</span><strong id="rudderOrderText" class="digital orderDigital">0°</strong></div></div>
+  </div>
+
+  <div class="panel wheelPanel">
+   <h2>TIMÃO</h2>
+   <div class="wheelContainer"><div id="wheel" class="wheel"><div class="wheelRing"></div><div class="spoke s1"></div><div class="spoke s2"></div><div class="spoke s3"></div><div class="spoke s4"></div><div class="spoke s5"></div><div class="spoke s6"></div><div class="spoke s7"></div><div class="spoke s8"></div><div class="hub"></div></div></div>
+   <div class="wheelBottom"><span class="port">BB</span><button id="midships">A MEIO</button><span class="starboard">BE</span></div>
+  </div>
+
+  <div class="panel enginePanel">
+   <h2>MANETE DE MÁQUINA</h2>
+   <div id="engineTelegraph" class="engineTelegraph">
+    <div id="engineRail" class="engineRail"><div class="aheadZone"></div><div class="asternZone"></div><div class="engineCenter"></div><div id="engineHandle" class="engineHandle stop" role="slider" tabindex="0" aria-label="Ordem de máquina" aria-valuemin="-4" aria-valuemax="4" aria-valuenow="0" aria-valuetext="Sem máquina"></div></div>
+    <div class="engineMarks">
+     <button class="engineStep ahead" data-engine="4">FULL AHEAD</button>
+     <button class="engineStep ahead" data-engine="3">HALF AHEAD</button>
+     <button class="engineStep ahead" data-engine="2">SLOW AHEAD</button>
+     <button class="engineStep ahead" data-engine="1">DEAD SLOW AHEAD</button>
+     <button class="engineStep stop active" data-engine="0">SEM MÁQUINA</button>
+     <button class="engineStep astern" data-engine="-1">DEAD SLOW ASTERN</button>
+     <button class="engineStep astern" data-engine="-2">SLOW ASTERN</button>
+     <button class="engineStep astern" data-engine="-3">HALF ASTERN</button>
+     <button class="engineStep astern" data-engine="-4">FULL ASTERN</button>
+    </div>
+   </div>
+   <strong id="engineText" class="engineText stop">SEM MÁQUINA</strong>
+  </div>
+
+  <div class="panel rotPanel">
+   <h2>RAZÃO DE GUINADA — ROT</h2>
+   <div class="rotGauge"><div class="rotArc"></div><span id="rotMaxLeft" class="rot30L">30</span><span id="rotMidLeft" class="rot15L">15</span><span class="rot0">0</span><span id="rotMidRight" class="rot15R">15</span><span id="rotMaxRight" class="rot30R">30</span><div id="rotNeedle" class="rotNeedle"></div><div id="frigateRotNeedle" class="rotNeedle secondNeedle"></div><div class="rotHub"></div></div>
+   <div class="rotSides"><span class="port">BB</span><div class="rotReadouts"><strong id="rotText" class="digital">0.0°/min</strong><div id="compareRot"><span class="tankerColor">T <strong id="tankerRotText">0.0°/min</strong></span><span class="frigateColor">F <strong id="frigateRotText">0.0°/min</strong></span></div></div><span class="starboard">BE</span></div>
+  </div>
+ </section>
+</main>
+
+<div id="settingsOverlay" class="settingsOverlay" aria-hidden="true">
+ <aside class="settingsDrawer" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+  <div class="settingsHeader"><div><span>MODELO DIDÁTICO</span><h2 id="settingsTitle">Configurações de manobra</h2></div><button id="settingsClose" type="button" aria-label="Fechar configurações">×</button></div>
+  <p class="settingsIntro">Edite cada embarcação separadamente. Os valores ficam salvos neste navegador.</p>
+
+  <div class="configTabs" role="tablist" aria-label="Tipo de embarcação">
+   <button class="configTab active" type="button" data-config-ship="tanker" role="tab" aria-selected="true">NAVIO-TANQUE</button>
+   <button class="configTab" type="button" data-config-ship="frigate" role="tab" aria-selected="false">FRAGATA</button>
+  </div>
+
+  <section class="steeringConfig">
+   <div class="steeringTitle"><div><strong>TEMPO DO APARELHO DE GOVERNO</strong><span>Curso completo deste navio: 35° BB → 35° BE</span></div><label class="steeringTimeValue" for="cfgRudderTime"><input id="cfgRudderTime" type="number" min="1" max="60" step="0.1" inputmode="decimal" aria-label="Tempo do leme de full bombordo a full boreste"><b>s</b></label></div>
+   <input id="cfgRudderTimeRange" type="range" min="1" max="60" step="0.1" value="30.2" aria-label="Tempo do leme de full bombordo a full boreste em segundos">
+   <div class="rangeLabels"><span>1 s</span><span>TEMPO DO MODELO</span><span>60 s</span></div>
+   <p id="rudderTimeExample" class="steeringNote"></p>
+  </section>
+
+  <section class="mapConfig">
+   <div class="mapTitle"><div><strong>VELOCIDADES POR REGIME</strong><span>Metas próprias para cada profundidade</span></div><small>kn</small></div>
+   <div class="speedTables">
+    <div class="speedTableGroup">
+     <h3>DEEP WATERS</h3>
+     <div class="speedTable">
+      <div class="tableHeader"><span>REGIME</span><span class="aheadText">VANTE</span><span class="asternText">RÉ</span></div>
+      <div class="tableRow"><span>DEAD SLOW</span><input class="speedConfigInput aheadInput" data-water="deep" data-direction="ahead" data-regime="1" type="number" min="0" max="60" step="0.1" inputmode="decimal" aria-label="Dead slow a vante em águas profundas"><input class="speedConfigInput asternInput" data-water="deep" data-direction="astern" data-regime="1" type="number" min="0" max="40" step="0.1" inputmode="decimal" aria-label="Dead slow a ré em águas profundas"></div>
+      <div class="tableRow"><span>SLOW</span><input class="speedConfigInput aheadInput" data-water="deep" data-direction="ahead" data-regime="2" type="number" min="0" max="60" step="0.1" inputmode="decimal" aria-label="Slow a vante em águas profundas"><input class="speedConfigInput asternInput" data-water="deep" data-direction="astern" data-regime="2" type="number" min="0" max="40" step="0.1" inputmode="decimal" aria-label="Slow a ré em águas profundas"></div>
+      <div class="tableRow"><span>HALF</span><input class="speedConfigInput aheadInput" data-water="deep" data-direction="ahead" data-regime="3" type="number" min="0" max="60" step="0.1" inputmode="decimal" aria-label="Half a vante em águas profundas"><input class="speedConfigInput asternInput" data-water="deep" data-direction="astern" data-regime="3" type="number" min="0" max="40" step="0.1" inputmode="decimal" aria-label="Half a ré em águas profundas"></div>
+      <div class="tableRow"><span>FULL</span><input class="speedConfigInput aheadInput" data-water="deep" data-direction="ahead" data-regime="4" type="number" min="0" max="60" step="0.1" inputmode="decimal" aria-label="Full a vante em águas profundas"><input class="speedConfigInput asternInput" data-water="deep" data-direction="astern" data-regime="4" type="number" min="0" max="40" step="0.1" inputmode="decimal" aria-label="Full a ré em águas profundas"></div>
+     </div>
+    </div>
+
+    <div class="speedTableGroup shallowTable">
+     <h3>SHALLOW WATERS — h/T ≈ 1,2</h3>
+     <div class="speedTable">
+      <div class="tableHeader"><span>REGIME</span><span class="aheadText">VANTE</span><span class="asternText">RÉ</span></div>
+      <div class="tableRow"><span>DEAD SLOW</span><input class="speedConfigInput aheadInput" data-water="shallow" data-direction="ahead" data-regime="1" type="number" min="0" max="60" step="0.1" inputmode="decimal" aria-label="Dead slow a vante em águas rasas"><input class="speedConfigInput asternInput" data-water="shallow" data-direction="astern" data-regime="1" type="number" min="0" max="40" step="0.1" inputmode="decimal" aria-label="Dead slow a ré em águas rasas"></div>
+      <div class="tableRow"><span>SLOW</span><input class="speedConfigInput aheadInput" data-water="shallow" data-direction="ahead" data-regime="2" type="number" min="0" max="60" step="0.1" inputmode="decimal" aria-label="Slow a vante em águas rasas"><input class="speedConfigInput asternInput" data-water="shallow" data-direction="astern" data-regime="2" type="number" min="0" max="40" step="0.1" inputmode="decimal" aria-label="Slow a ré em águas rasas"></div>
+      <div class="tableRow"><span>HALF</span><input class="speedConfigInput aheadInput" data-water="shallow" data-direction="ahead" data-regime="3" type="number" min="0" max="60" step="0.1" inputmode="decimal" aria-label="Half a vante em águas rasas"><input class="speedConfigInput asternInput" data-water="shallow" data-direction="astern" data-regime="3" type="number" min="0" max="40" step="0.1" inputmode="decimal" aria-label="Half a ré em águas rasas"></div>
+      <div class="tableRow"><span>FULL</span><input class="speedConfigInput aheadInput" data-water="shallow" data-direction="ahead" data-regime="4" type="number" min="0" max="60" step="0.1" inputmode="decimal" aria-label="Full a vante em águas rasas"><input class="speedConfigInput asternInput" data-water="shallow" data-direction="astern" data-regime="4" type="number" min="0" max="40" step="0.1" inputmode="decimal" aria-label="Full a ré em águas rasas"></div>
+     </div>
+    </div>
+   </div>
+   <p class="settingsFootnote">Os valores Shallow são as metas finais em linha reta. Com leme aplicado, somente o parâmetro “Perda em curva” pode reduzir a velocidade.</p>
+  </section>
+
+  <section class="mapConfig rotMapConfig">
+   <div class="mapTitle"><div><strong>MATRIZ BASE DE ROT — DEEP WATER</strong><span>Linhas: leme · colunas: velocidade através da água; o limite shallow reduz proporcionalmente toda a matriz</span></div><small>°/min</small></div>
+   <div id="rotMatrix" class="rotMatrix" aria-label="Matriz de ROT por velocidade e ângulo de leme"></div>
+  </section>
+
+  <section class="mapConfig dynamicsConfig">
+   <div class="mapTitle"><div><strong>DINÂMICA DO NAVIO</strong><span>Parâmetros do modelo de aceleração e guinada</span></div><small>MODELO</small></div>
+   <div class="dynamicsGrid">
+    <label><span>ACELERAÇÃO</span><div><input class="dynamicInput" data-field="accelerationMps2" type="number" min="0.001" max="2" step="0.0001" inputmode="decimal"><b>m/s²</b></div></label>
+    <label><span>DESACELERAÇÃO EM COAST</span><div><input class="dynamicInput" data-field="coastDecelerationMps2" type="number" min="0.001" max="1" step="0.001" inputmode="decimal"><b>m/s²</b></div></label>
+    <label><span>TAU DE GUINADA</span><div><input class="dynamicInput" data-field="tauRefSec" type="number" min="0.5" max="600" step="0.1" inputmode="decimal"><b>s</b></div></label>
+    <label><span>VELOCIDADE DE REFERÊNCIA DO TAU</span><div><input class="dynamicInput" data-field="tauRefSpeedKn" type="number" min="1" max="40" step="0.1" inputmode="decimal"><b>kn</b></div></label>
+    <label><span>CRESCIMENTO DA ROT</span><div><input class="dynamicInput" data-field="rotGrowth" type="number" min="0.1" max="3" step="0.05" inputmode="decimal"><b>×</b></div></label>
+    <label><span>V50 DO LEME</span><div><input class="dynamicInput" data-field="rudderV50Kn" type="number" min="0.1" max="10" step="0.1" inputmode="decimal"><b>kn</b></div></label>
+    <label><span>PERDA EM CURVA</span><div><input class="dynamicInput" data-field="turnSpeedLoss" data-scale="100" type="number" min="0" max="90" step="1" inputmode="decimal"><b>%</b></div></label>
+    <label><span>EXPOENTE DA PERDA</span><div><input class="dynamicInput" data-field="turnSpeedExponent" type="number" min="0.1" max="2" step="0.05" inputmode="decimal"><b>p</b></div></label>
+    <label class="deepRotLimit"><span>ROT MÁXIMA — DEEP</span><div><input class="dynamicInput" data-field="maxRotDeep" type="number" min="1" max="240" step="0.1" inputmode="decimal"><b>°/min</b></div></label>
+    <label class="shallowRotLimit"><span>ROT MÁXIMA — SHALLOW</span><div><input class="dynamicInput" data-field="maxRotShallow" type="number" min="0.1" max="239.9" step="0.1" inputmode="decimal"><b>°/min</b></div></label>
+    <label><span>ESTABILIDADE RASA</span><div><input class="dynamicInput" data-field="shallowStability" type="number" min="0.5" max="3" step="0.05" inputmode="decimal"><b>×</b></div></label>
+    <label><span>INSTABILIDADE DE RUMO</span><div><input class="dynamicInput" data-field="wanderAmplitude" type="number" min="0" max="10" step="0.1" inputmode="decimal"><b>°/min</b></div></label>
+   </div>
+  </section>
+
+  <section class="growthConfig">
+   <div class="growthTitle"><div><span>RITMO DA PROPULSÃO</span><small>Altera apenas a aceleração e a desaceleração do navio</small></div><output id="cfgGrowthValue" for="cfgGrowth">1.00×</output></div>
+   <input id="cfgGrowth" type="range" min="0.25" max="3" step="0.05" value="1">
+   <div class="rangeLabels"><span>MAIS LENTA</span><span>PADRÃO</span><span>MAIS RÁPIDA</span></div>
+   <p class="growthNote">A resposta da ROT é ajustada separadamente em “Crescimento da ROT”. Os botões de tempo continuam atuando sobre toda a simulação.</p>
+  </section>
+
+  <section class="graphCard" aria-labelledby="speedGraphTitle">
+   <div class="graphHeader"><div><h3 id="speedGraphTitle">Velocidade × regime de máquina</h3><span>Os pontos vêm da tabela acima</span></div><span>VELOCIDADE</span></div>
+   <canvas id="speedGraph" width="500" height="220" aria-label="Gráfico de velocidade por regime de máquina"></canvas>
+   <div class="graphLegend speedLegend"><span class="asternLegend"><i></i>RÉ DEEP</span><span class="asternLegend shallowLegend"><i></i>RÉ SHALLOW</span><span class="aheadLegend"><i></i>VANTE DEEP</span><span class="aheadLegend shallowLegend"><i></i>VANTE SHALLOW</span></div>
+  </section>
+
+  <section class="graphCard" aria-labelledby="rotGraphTitle">
+   <div class="graphHeader"><div><h3 id="rotGraphTitle">ROT × velocidade × leme</h3><span>Linhas contínuas: deep · linhas tracejadas: shallow</span></div><span>GUINADA</span></div>
+   <canvas id="rotGraph" width="500" height="220" aria-label="Gráfico de ROT por ângulo de leme"></canvas>
+   <div id="rotGraphLegend" class="graphLegend matrixLegend"></div>
+  </section>
+
+  <div id="settingsStatus" class="settingsStatus" role="status" aria-live="polite"></div>
+  <div class="settingsFooter"><button id="resetConfig" class="resetConfig" type="button">RESTAURAR PADRÃO DESTE NAVIO</button><button id="saveConfig" class="saveConfig" type="button">SALVAR E APLICAR</button></div>
+ </aside>
+</div>
+
+<script src="script.js"></script>
+</body>
 </html>
